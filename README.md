@@ -10,11 +10,13 @@ TODO
 
 ```sh
 PROJECT_ID=$(gcloud config get-value project)
+GCLOUD_USER=$(gcloud config get-value core/account)
 REGION="us-central1"
 DOCKER_REPO="shiny-run"
 IMAGE_NAME="shiny-run"
 IMAGE_TAG="latest"
 IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/$IMAGE_NAME:$IMAGE_TAG"
+SERVICE_NAME="shiny"
 ```
 
 ### enable apis 
@@ -23,11 +25,13 @@ IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/$IMAGE_NAME:$IMAGE_TA
 gcloud services enable artifactregistry.googleapis.com
 ```
 
-###  create repository
+### create docker repository
 
 ```sh
 gcloud artifacts repositories create $DOCKER_REPO --repository-format=docker --location=$REGION --description="Docker repository for Shiny on Cloud Run demo"
+```
 
+```sh
 gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION
 ```
 
@@ -48,12 +52,35 @@ cd build && gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h
 https://cloud.google.com/sdk/gcloud/reference/run/deploy
 
 ```sh
-gcloud run deploy shiny --image $IMAGE_URI --region=$REGION --platform="managed" --max-instances=1 --port="5000" --no-allow-unauthenticated
+gcloud run deploy $SERVICE_NAME --image $IMAGE_URI --region=$REGION --platform="managed" --max-instances=1 --port="5000" --no-allow-unauthenticated
 ```
 
+#### grant access
+
+TODO
+
+```sh
+gcloud run services add-iam-policy-binding $SERVICE_NAME \
+  --member="user:$GCLOUD_USER " \
+  --role="roles/run.invoker" \
+  --region=$REGION
+```
+
+```sh
+gcloud run services get-iam-policy $SERVICE_NAME --region="us-central1"
+```
+
+### Cleanup
+
+TODO
+
+```sh
+# gcloud run services stop $SERVICE_NAME
+# gcloud run services delete $SERVICE_NAME
+# gcloud artifacts repositories delete $DOCKER_REPO
+```
 
 ## References
-
 
 * [Deploying an R Shiny Dashboard on GCP Cloud Run | by Poorna Chathuranjana | Medium](https://medium.com/@hdpoorna/deploying-an-r-shiny-dashboard-on-gcp-cloud-run-c1c32a076783#6a58)
 * [Deploying Shiny to Cloud Run • googleCloudRunner](https://code.markedmondson.me/googleCloudRunner/articles/usecase-shiny-cloudrun.html)
@@ -63,3 +90,4 @@ gcloud run deploy shiny --image $IMAGE_URI --region=$REGION --platform="managed"
 ## TODO 
 
 * [ ] trim down dockerfile
+

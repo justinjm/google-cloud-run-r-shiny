@@ -2,6 +2,20 @@ library(shiny)
 library(httr)
 library(stringr)
 
+library(googleAuthR)
+library(googleCloudVertexAIR)
+
+
+projectId <- Sys.getenv("PROJECT_ID") 
+gcva_region_set(region = Sys.getenv("REGION"))
+gcva_project_set(projectId = projectId)
+
+options(googleAuthR.scopes.selected = "https://www.googleapis.com/auth/cloud-platform")
+
+gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"))
+
+
+
 ui <- fluidPage(
   div(
     titlePanel("Shiny App Demo"),
@@ -10,16 +24,16 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       h3("Welcome to a Demo Shiny App!"),
-      p("This application allows you summarize text, fill out the inputs below and then ask a question to the right."),
+      p("This application allows you test text prompts with Vertex AI.  fill out the inputs below and then ask a question to the right."),
       textInput("user_name", "User Name", "<FIRST NAME, LAST NAME>"),
-      tags$p("Learn more about BigQuery ", 
-             tags$a(href = "https://cloud.google.com/bigquery/docs", target="_blank", "here")
+      tags$p("Learn more about Generative AI on Vertex AI ", 
+             tags$a(href = "https://cloud.google.com/vertex-ai/docs/generative-ai/learn/overview", target="_blank", "here")
       ),tags$hr(),
-      selectInput("user_type", "User Type",
-                  choices = c("New", "Existing"), selected = "new"),
+      selectInput("model_name", "Model Name",
+                  choices = c("text-bison"), selected = "text-bison"),
       tags$hr(),
-      sliderInput("temperature", "Temperature", min = 0.1, max = 1.0, value = 0.7, step = 0.1),
-      sliderInput("max_length", "Maximum Length", min = 1, max = 2048, value = 512, step = 1),
+      sliderInput("temperature", "Temperature", min = 0.1, max = 1.0, value = 0.2, step = 0.1),
+      sliderInput("max_length", "Maximum Length", min = 1, max = 8000, value = 256, step = 1),
       tags$hr(),
       textAreaInput(inputId = "sysprompt", label = "SYSTEM PROMPT",height = "200px", placeholder = "You are a helpful assistant."),
       tags$hr(),
@@ -43,7 +57,7 @@ ui <- fluidPage(
       fluidRow(
         column(11,textAreaInput(inputId = "user_message", placeholder = "Enter your message:", label="USER PROMPT", width = "100%")),
         column(1,actionButton("send_message", "Send",icon = icon("play"),height = "350px"))
-      ),style = "background-color: #00A67E")
+      ),style = "background-color: #519BF7")
   ),style = "background-color: #3d3f4e")
 
 server <- function(input, output, session) {
@@ -54,34 +68,22 @@ server <- function(input, output, session) {
       new_data <- data.frame(source = "User", message = input$user_message, stringsAsFactors = FALSE)
       chat_data(rbind(chat_data(), new_data))
       
-      gpt_res <- call_gpt_api(input$api_key, input$user_message, input$model_name, input$temperature, input$max_length, input$sysprompt)
+      api_res <- gcva_text_gen_predict(
+        prompt=input$user_message,
+        modelId=input$model_name,
+        temperature = input$temperature,
+        maxOutputTokens=input$max_length,
+        topP=0.8,
+        topK=40
+      )
       
-      if (!is.null(gpt_res)) {
-        gpt_data <- data.frame(source = "ChatGPT", message = gpt_res, stringsAsFactors = FALSE)
-        chat_data(rbind(chat_data(), gpt_data))
+      if (!is.null(api_res)) {
+        api_data <- data.frame(source = "Vertex AI", message = api_res, stringsAsFactors = FALSE)
+        chat_data(rbind(chat_data(), api_data))
       }
       updateTextInput(session, "user_message", value = "")
     }
   })
-  
-  call_gpt_api <- function(api_key, prompt, model_name, temperature, max_length, sysprompt) {
-    response <- httr::POST(
-      url = "https://api.openai.com/v1/chat/completions", 
-      add_headers(Authorization = paste("Bearer", api_key)),
-      content_type("application/json"),
-      encode = "json",
-      body = list(
-        model = model_name,
-        messages = list(
-          list(role = "user", content = prompt),
-          list(role = "system", content = sysprompt)
-        ),
-        temperature = temperature,
-        max_tokens = max_length
-      )
-    )
-    return(str_trim(content(response)$choices[[1]]$message$content))
-  }
   
   output$chat_history <- renderUI({
     chatBox <- lapply(1:nrow(chat_data()), function(i) {

@@ -28,7 +28,10 @@ gcloud services enable artifactregistry.googleapis.com
 ### create docker repository
 
 ```sh
-gcloud artifacts repositories create $DOCKER_REPO --repository-format=docker --location=$REGION --description="Docker repository for Shiny on Cloud Run demo"
+gcloud artifacts repositories create $DOCKER_REPO \
+  --repository-format=docker \
+  --location=$REGION \
+  --description="Docker repository for Shiny on Cloud Run demo"
 ```
 
 ```sh
@@ -52,7 +55,13 @@ cd build && gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h
 https://cloud.google.com/sdk/gcloud/reference/run/deploy
 
 ```sh
-gcloud run deploy $SERVICE_NAME --image $IMAGE_URI --region=$REGION --platform="managed" --max-instances=1 --port="5000" --no-allow-unauthenticated
+gcloud run deploy $SERVICE_NAME \
+  --image $IMAGE_URI \
+  --region=$REGION \
+  --platform="managed" \
+  --max-instances=1 \
+  --port="5000" \
+  --allow-unauthenticated
 ```
 
 #### grant access
@@ -60,14 +69,14 @@ gcloud run deploy $SERVICE_NAME --image $IMAGE_URI --region=$REGION --platform="
 TODO
 
 ```sh
-gcloud run services add-iam-policy-binding $SERVICE_NAME \
-  --member="user:$GCLOUD_USER " \
-  --role="roles/run.invoker" \
-  --region=$REGION
+# gcloud run services add-iam-policy-binding $SERVICE_NAME \
+#   --member="user:$GCLOUD_USER " \
+#   --role="roles/run.invoker" \
+#   --region=$REGION
 ```
 
 ```sh
-gcloud run services get-iam-policy $SERVICE_NAME --region="us-central1"
+# gcloud run services get-iam-policy $SERVICE_NAME --region=$REGION
 ```
 
 ### Cleanup
@@ -75,8 +84,8 @@ gcloud run services get-iam-policy $SERVICE_NAME --region="us-central1"
 TODO
 
 ```sh
-# gcloud run services stop $SERVICE_NAME
-# gcloud run services delete $SERVICE_NAME
+gcloud run services delete $SERVICE_NAME --region=$REGION
+# gcloud run services stop $SERVICE_NAME --region=$REGION
 # gcloud artifacts repositories delete $DOCKER_REPO
 ```
 

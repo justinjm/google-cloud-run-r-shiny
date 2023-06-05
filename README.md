@@ -61,8 +61,16 @@ gcloud run deploy $SERVICE_NAME \
   --platform="managed" \
   --max-instances=1 \
   --port="5000" \
-  --allow-unauthenticated
+  --no-allow-unauthenticated
 ```
+
+### test locally
+
+```sh
+gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
+```
+
+<https://cloud.google.com/run/docs/authenticating/developers#testing>
 
 #### grant access
 

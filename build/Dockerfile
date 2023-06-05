@@ -25,6 +25,9 @@ RUN R -e "install.packages('shinythemes', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('DT', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
 
+RUN installGithub.r justinjm/googleCloudVertexAIR \
+    && rm -rf /tmp/downloaded_packages/
+
 # clean up
 RUN rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 

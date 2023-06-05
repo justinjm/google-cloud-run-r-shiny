@@ -15,4 +15,4 @@ result <- gcva_text_gen_predict(
   modelId="text-bison"
 )
 
-cat(result)
+result$predictions$content

@@ -18,13 +18,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 # install required R packages
+## from CRAN
 RUN R -e "install.packages('shiny', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('shinydashboard', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('shinydashboardPlus', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('shinythemes', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('DT', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('ggplot2', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('httr', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('stringr', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('googleAuthR', repos='http://cran.rstudio.com/')"
 
+## from GitHub 
 RUN installGithub.r justinjm/googleCloudVertexAIR \
     && rm -rf /tmp/downloaded_packages/
 

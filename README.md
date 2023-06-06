@@ -2,9 +2,9 @@
 
 An example of how to deploy an R Shiny app on Google Cloud Run.
 
-## Setup 
+## Setup
 
-TODO 
+TODO
 
 ## Workflow
 
@@ -19,7 +19,7 @@ IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/$IMAGE_NAME:$IMAGE_TA
 SERVICE_NAME="shiny"
 ```
 
-### enable apis 
+### enable apis
 
 ```sh
 gcloud services enable artifactregistry.googleapis.com
@@ -44,15 +44,15 @@ gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION
 gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 ```
 
-### build container iamge 
+### build container iamge
 
-```sh
+``` sh
 cd build && gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h
 ```
 
-### Deploy to cloud run 
+### Deploy to cloud run
 
-https://cloud.google.com/sdk/gcloud/reference/run/deploy
+<https://cloud.google.com/sdk/gcloud/reference/run/deploy>
 
 ```sh
 gcloud run deploy $SERVICE_NAME \
@@ -99,12 +99,15 @@ gcloud run services delete $SERVICE_NAME --region=$REGION
 
 ## References
 
-* [Deploying an R Shiny Dashboard on GCP Cloud Run | by Poorna Chathuranjana | Medium](https://medium.com/@hdpoorna/deploying-an-r-shiny-dashboard-on-gcp-cloud-run-c1c32a076783#6a58)
-* [Deploying Shiny to Cloud Run • googleCloudRunner](https://code.markedmondson.me/googleCloudRunner/articles/usecase-shiny-cloudrun.html)
-* [randy3k/shiny-cloudrun-demo: Running Shiny app on Google Cloud Run](https://github.com/randy3k/shiny-cloudrun-demo/tree/master)
+-   [Deploying Shiny to Cloud Run • googleCloudRunner](https://code.markedmondson.me/googleCloudRunner/articles/usecase-shiny-cloudrun.html)
+    -   [randy3k/shiny-cloudrun-demo: Running Shiny app on Google Cloud Run](https://github.com/randy3k/shiny-cloudrun-demo/tree/master)
+-   [Online payments for data science apps (DSaaS) using R, Shiny, Firebase, Paddle and Google Cloud Functions · Mark Edmondson](https://code.markedmondson.me/datascience-aas/)
+-   [Deploying an R Shiny Dashboard on GCP Cloud Run \| by Poorna Chathuranjana \| Medium](https://medium.com/@hdpoorna/deploying-an-r-shiny-dashboard-on-gcp-cloud-run-c1c32a076783#6a58)
 
 
-## TODO 
+**Google Cloud Blog Post**
 
-* [ ] trim down dockerfile
+-   [Calculating physical climate risk for sustainable finance \| Google Cloud Blog](https://cloud.google.com/blog/topics/sustainability/calculating-physical-climate-risk-for-sustainable-finance)
+-   [rsmsoftware / portfolio-climate-risk-analytics-design-pattern --- Bitbucket](https://bitbucket.org/rsmsoftware/portfolio-climate-risk-analytics-design-pattern/src/master/)
+
 

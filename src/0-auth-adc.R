@@ -1,23 +1,34 @@
 
+# load packages -----------------------------------------------------------
 library(gargle)
+library(bigrquery)
+# TODO - figure out ADC
+# library(googleCloudStorageR)
+## TODO - package needs auth migration from googleAuthR to use ADC
 # library(googleCloudVertexAIR)
+
+# set options and constants -----------------------------------------------
 options(gargle_verbosity = "debug")
 
-# token <- token_fetch(scopes = "https://www.googleapis.com/auth/cloud-platform",
-#                      email =)
+project_id <- Sys.getenv("PROJECT_ID")
 
-# bq_auth(token = token)
-
+# authenticate ------------------------------------------------------------
 credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
 
-library(bigrquery)
+# test connections --------------------------------------------------------
+## List gcs buckets
+# buckets <- gcs_list_buckets(project_id)
+# buckets
+
 ## List bigquery datasets 
-datasets <- bq_project_datasets(Sys.getenv("PROJECT_ID"))
+datasets <- bq_project_datasets(project_id)
 datasets
 
+# list vertex ai datasets  
 # gcva_list_datasets(projectId = Sys.getenv("PROJECT_ID"),
 #                    locationId = Sys.getenv("REGION"))
 
+# Call Vertex LLM API  
 # result <- gcva_text_gen_predict(
 #   projectId = Sys.getenv("PROJECT_ID"),
 #   locationId = Sys.getenv("REGION"),

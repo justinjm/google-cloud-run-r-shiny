@@ -5,15 +5,15 @@ library(stringr)
 library(googleAuthR)
 library(googleCloudVertexAIR)
 
-
 projectId <- Sys.getenv("PROJECT_ID") 
-gcva_region_set(region = Sys.getenv("REGION"))
+region <- Sys.getenv("REGION")
+gcva_region_set(region = region)
 gcva_project_set(projectId = projectId)
 
+# options(googleAuthR.verbose = 0) # set when debugging
 options(googleAuthR.scopes.selected = "https://www.googleapis.com/auth/cloud-platform")
-
+# gar_set_client(web_json = "client.json")
 gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"))
-
 
 
 ui <- fluidPage(
@@ -78,7 +78,7 @@ server <- function(input, output, session) {
       )
       
       if (!is.null(api_res)) {
-        api_data <- data.frame(source = "Vertex AI", message = api_res, stringsAsFactors = FALSE)
+        api_data <- data.frame(source = "Response:", message = api_res, stringsAsFactors = FALSE)
         chat_data(rbind(chat_data(), api_data))
       }
       updateTextInput(session, "user_message", value = "")

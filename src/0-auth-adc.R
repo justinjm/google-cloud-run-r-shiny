@@ -12,7 +12,7 @@ project_id <- Sys.getenv("PROJECT_ID")
 
 # authenticate ------------------------------------------------------------
 ## workaround for googleCloudStorage auth: 
-## https://github.com/r-lib/gargle/issues/130
+## https://github.com/cloudyr/googleCloudStorageR/issues/131
 token <- credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
 gcs_auth(token = token)
 

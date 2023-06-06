@@ -1,21 +1,6 @@
-library(shiny)
-library(httr)
-library(stringr)
+# app.R -----------------------------------------------------------------------
 
-library(googleAuthR)
-library(googleCloudVertexAIR)
-
-projectId <- Sys.getenv("PROJECT_ID") 
-region <- Sys.getenv("REGION")
-gcva_region_set(region = region)
-gcva_project_set(projectId = projectId)
-
-# options(googleAuthR.verbose = 0) # set when debugging
-options(googleAuthR.scopes.selected = "https://www.googleapis.com/auth/cloud-platform")
-# gar_set_client(web_json = "client.json")
-gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"))
-
-
+## UI -----------------------------------------------------------------------
 ui <- fluidPage(
   div(
     titlePanel("Shiny App Demo"),
@@ -60,6 +45,8 @@ ui <- fluidPage(
       ),style = "background-color: #519BF7")
   ),style = "background-color: #3d3f4e")
 
+
+## server ------------------------------------------------------------------
 server <- function(input, output, session) {
   chat_data <- reactiveVal(data.frame())
   
@@ -99,4 +86,6 @@ server <- function(input, output, session) {
     }
   })
 }
+
+## initialize  -------------------------------------------------------------
 shinyApp(ui = ui, server = server)

@@ -64,13 +64,39 @@ gcloud run deploy $SERVICE_NAME \
   --no-allow-unauthenticated
 ```
 
-### test locally
+### test with local 
+
+Since we are disallowing all unauthenticated users
 
 ```sh
 gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
 ```
 
 <https://cloud.google.com/run/docs/authenticating/developers#testing>
+
+#### Run Shiny App from Cloud Shell for debugging
+
+pull docker image from artifact repository 
+
+```sh
+docker pull \
+    $IMAGE_URI
+```
+
+```sh
+docker run --rm -p 5000:5000 $IMAGE_URI
+```
+
+```sh
+docker exec -it <container id>  bash
+```
+
+then view the logs:
+
+```sh
+cd /var/log/shiny-server/
+```
+
 
 #### grant access
 
@@ -86,6 +112,8 @@ TODO
 ```sh
 # gcloud run services get-iam-policy $SERVICE_NAME --region=$REGION
 ```
+
+
 
 ### Cleanup
 

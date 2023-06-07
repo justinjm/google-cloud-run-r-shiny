@@ -2,15 +2,16 @@
 library(shiny)
 library(httr)
 library(stringr)
-
 library(gargle)
 library(googleCloudVertexAIR)
 
 cat("project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
 cat("dataset_id:", dataset_id <- Sys.getenv("DATASET_ID"), "\n")
 cat("billing_project_id:", billing_project_id <- Sys.getenv("BILLING_PROJECT_ID"), "\n")
-
 cat("region:", region <- Sys.getenv("REGION"), "\n")
+
+gcva_project_set(project_id)
+gcva_region_set(region)
 
 # authenticate ------------------------------------------------------------
 credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
@@ -71,8 +72,6 @@ server <- function(input, output, session) {
       chat_data(rbind(chat_data(), new_data))
       
       api_res <- gcva_text_gen_predict(
-        projectId =  project_id,
-        locationId = region,
         prompt=input$user_message,
         modelId=input$model_name,
         temperature = input$temperature,

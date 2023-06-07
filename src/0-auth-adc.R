@@ -7,6 +7,9 @@ library(googleCloudVertexAIR)
 
 # set options and constants -----------------------------------------------
 project_id <- Sys.getenv("PROJECT_ID")
+location_id <- Sys.getenv("REGION")
+gcva_project_set(project_id)
+gcva_region_set(location_id)
 # options(googleAuthR.verbose = 2)
 # options(gargle_verbosity = "debug")
 
@@ -26,14 +29,11 @@ datasets <- bq_project_datasets(project_id)
 datasets
 
 # list vertex ai datasets  
-vertex_datasets <- gcva_list_datasets(projectId = Sys.getenv("PROJECT_ID"),
-                                      locationId = Sys.getenv("REGION"))
+vertex_datasets <- gcva_list_datasets()
 vertex_datasets
 
 # Call Vertex LLM API  
 result <- gcva_text_gen_predict(
-  projectId = Sys.getenv("PROJECT_ID"),
-  locationId = Sys.getenv("REGION"),
   prompt="Give me ten interview questions for the role of a Python software engineer.",
   modelId="text-bison"
 )

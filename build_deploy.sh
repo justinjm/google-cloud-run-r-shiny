@@ -12,6 +12,6 @@ gcloud run deploy $SERVICE_NAME \
   --port="5000" \
   --no-allow-unauthenticated
 
-  gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
+gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
 
-  ## gcloud run services delete $SERVICE_NAME --region=$REGION ## 
+## gcloud run services delete $SERVICE_NAME --region=$REGION ## 

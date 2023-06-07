@@ -79,8 +79,7 @@ gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REG
 pull docker image from artifact repository 
 
 ```sh
-docker pull \
-    $IMAGE_URI
+docker pull $IMAGE_URI
 ```
 
 ```sh

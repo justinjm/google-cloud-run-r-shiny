@@ -1,4 +1,5 @@
 library(shiny)
+library(gargle)
 library(bigrquery)
 library(DT)
 
@@ -61,6 +62,7 @@ server <- function(input, output) {
   })
   
   # Handle submit button click event
+  ## TODO - Fix error 
   observeEvent(input$submitBtn, {
     output$tableOutput <- renderDataTable({
       datatable(result(), options = list(scrollX = TRUE))

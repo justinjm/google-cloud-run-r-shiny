@@ -1,13 +1,6 @@
 #!/bin/bash
 
-PROJECT_ID=$(gcloud config get-value project)
-GCLOUD_USER=$(gcloud config get-value core/account)
-REGION="us-central1"
-DOCKER_REPO="shiny-run"
-IMAGE_NAME="shiny-run"
-IMAGE_TAG="latest"
-IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/$IMAGE_NAME:$IMAGE_TAG"
-SERVICE_NAME="shiny"
+source args
 
 gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 

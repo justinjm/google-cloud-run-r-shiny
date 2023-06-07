@@ -24,6 +24,7 @@ RUN R -e "install.packages('googleAuthR', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('gargle', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('googleCloudStorageR', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('bigrquery', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('DT', repos='http://cran.rstudio.com/')"
 
 ## from GitHub 
 RUN installGithub.r justinjm/googleCloudVertexAIR \

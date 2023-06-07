@@ -47,7 +47,7 @@ gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 ### build container iamge
 
 ``` sh
-cd build && gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h
+gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 ```
 
 ### Deploy to cloud run

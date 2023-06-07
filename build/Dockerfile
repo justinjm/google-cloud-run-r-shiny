@@ -20,9 +20,10 @@ RUN apt-get update && apt-get install -y \
 # install required R packages
 ## from CRAN
 RUN R -e "install.packages('shiny', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('httr', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('stringr', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('googleAuthR', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('gargle', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('googleCloudStorageR', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('bigrquery', repos='http://cran.rstudio.com/')"
 
 ## from GitHub 
 RUN installGithub.r justinjm/googleCloudVertexAIR \

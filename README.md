@@ -4,10 +4,25 @@ An example of how to deploy an R Shiny app on Google Cloud Run.
 
 ## Setup
 
-TODO
+
+TODO 
+
+
+### Local machine 
+
+
+Install `gcloud` CLI 
+
+
+Set ADC on your local machine so you can test the app locally 
+
+<https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login>
+
+```sh
+gcloud auth application-default login
+```
 
 ## Workflow
-
 
 ### .Renviron 
 
@@ -41,15 +56,15 @@ IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/$IMAGE_NAME:$IMAGE_TA
 SERVICE_NAME="shiny"
 ```
 
-
-
 ### enable apis
 
 ```sh
 gcloud services enable artifactregistry.googleapis.com
 ```
 
-### create docker repository
+### create Artifact Registry (docker repository)
+
+Create an Artifact Registry (AR) repository (repo) to serve as our docker repository 
 
 ```sh
 gcloud artifacts repositories create $DOCKER_REPO \
@@ -58,11 +73,14 @@ gcloud artifacts repositories create $DOCKER_REPO \
   --description="Docker repository for Shiny on Cloud Run demo"
 ```
 
+view newly created AR repo to sanity check
+
 ```sh
 gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION
 ```
 
 ### configure auth
+
 
 ```sh
 gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
@@ -70,7 +88,7 @@ gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
 ### build container iamge
 
-``` sh
+```sh
 gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 ```
 
@@ -174,7 +192,7 @@ gcloud run services delete $SERVICE_NAME --region=$REGION
 # gcloud run services stop $SERVICE_NAME --region=$REGION # stop service only
 ```
 
-Delete artifcat repository:
+Delete AR repo:
 
 ```sh 
 # gcloud artifacts repositories delete $DOCKER_REPO

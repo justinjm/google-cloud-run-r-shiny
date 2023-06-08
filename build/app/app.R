@@ -1,6 +1,5 @@
 # app.R -----------------------------------------------------------------------
 library(shiny)
-library(gargle)
 library(googleCloudStorageR)
 library(bigrquery)
 library(googleCloudVertexAIR)
@@ -11,11 +10,13 @@ cat("project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
 cat("dataset_id:", dataset_id <- Sys.getenv("DATASET_ID"), "\n")
 cat("billing_project_id:", billing_project_id <- Sys.getenv("BILLING_PROJECT_ID"), "\n")
 cat("region:", region <- Sys.getenv("REGION"), "\n")
+ 
+cat(file = stderr(), paste0("<br>Do I have a token: ", googleAuthR::gar_has_token()),  "\n")
 
 # authenticate ------------------------------------------------------------
-token <- credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
-gcs_auth(token = token)
+googleAuthR::gar_gce_auth()
 
+cat(file = stderr(), paste0("<br>Do I have a token: ", googleAuthR::gar_has_token()), "\n")
 
 ## UI -----------------------------------------------------------------------
 ui <- fluidPage(
@@ -35,7 +36,7 @@ ui <- fluidPage(
                   choices = c("text-bison"), selected = "text-bison"),
       tags$hr(),
       sliderInput("temperature", "Temperature", min = 0.1, max = 1.0, value = 0.2, step = 0.1),
-      sliderInput("max_length", "Maximum Length", min = 1, max = 8000, value = 256, step = 1),
+      sliderInput("max_length", "Maximum Length", min = 1, max = 1024, value = 256, step = 1),
       tags$hr(),
       textAreaInput(inputId = "sysprompt", label = "SYSTEM PROMPT",height = "200px", placeholder = "You are a helpful assistant."),
       tags$hr(),

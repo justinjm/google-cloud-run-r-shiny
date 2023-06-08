@@ -50,6 +50,31 @@ gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 ```
 
+### Create Service account and attach to cloud run 
+
+<https://cloud.google.com/run/docs/securing/service-identity#gcloud>
+<https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-gcloud>
+
+
+```sh
+# gcloud iam service-accounts create SA_NAME \
+#     --description="DESCRIPTION" \
+#     --display-name="DISPLAY_NAME"
+
+## give default compute engine service account access to bucket
+# gcloud projects describe ${PROJECT_ID} > project-info.txt
+# PROJECT_NUM=$(cat project-info.txt | sed -nre 's:.*projectNumber\: (.*):\1:p')
+# SVC_ACCOUNT="${PROJECT_NUM//\'/}-compute@developer.gserviceaccount.com"
+# gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:$SVC_ACCOUNT --role roles/storage.objectAdmin
+```
+
+save as global variable for use in next step 
+
+```sh
+# export SVC_ACCOUNT=`XXXXXXXXXXX | jq -r '.cloudResource.serviceAccountId'`
+# echo $SVC_ACCOUNT 
+```
+
 ### Deploy to cloud run
 
 <https://cloud.google.com/sdk/gcloud/reference/run/deploy>
@@ -62,6 +87,7 @@ gcloud run deploy $SERVICE_NAME \
   --max-instances=1 \
   --port="5000" \
   --no-allow-unauthenticated
+  # \ -- service-account=$SVC_ACCOUNT 
 ```
 
 ### test with local 

@@ -20,7 +20,6 @@ cat("region:", region <- Sys.getenv("REGION"), "\n")
 googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
                       scopes = "https://www.googleapis.com/auth/cloud-platform")
 
-
 ## check if token exists after auth for debugging purposes
 cat(file = stderr(), paste0("Does a gar token exist: ", googleAuthR::gar_has_token()), "\n")
 
@@ -33,7 +32,7 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       h3("Welcome to a Demo Shiny App!"),
-      p("This application allows you test text prompts with Vertex AI.  fill out the inputs below and then ask a question to the right."),
+      p("This application allows you interact with Vertex AI Generative APIs for text. Fill out the inputs below and then ask a question to the right."),
       textInput("user_name", "User Name", "<FIRST NAME, LAST NAME>"),
       tags$p("Learn more about Generative AI on Vertex AI ", 
              tags$a(href = "https://cloud.google.com/vertex-ai/docs/generative-ai/learn/overview", target="_blank", "here")
@@ -44,8 +43,8 @@ ui <- fluidPage(
       sliderInput("temperature", "Temperature", min = 0.1, max = 1.0, value = 0.2, step = 0.1),
       sliderInput("max_length", "Maximum Length", min = 1, max = 1024, value = 256, step = 1),
       tags$hr(),
-      textAreaInput(inputId = "sysprompt", label = "SYSTEM PROMPT",height = "200px", placeholder = "You are a helpful assistant."),
-      tags$hr(),
+      # textAreaInput(inputId = "sysprompt", label = "PROMPT",height = "200px", placeholder = "You are a helpful assistant."),
+      # tags$hr(),
       tags$div(
         style="text-align:center; margin-top: 15px; color: white; background-color: #FFFFFF",
         a(href="https://github.com/justinjm/google-cloud-run-r-shiny", target="_blank",
@@ -58,13 +57,13 @@ ui <- fluidPage(
     ,
     mainPanel(
       tags$style(type = "text/css", ".shiny-output-error {visibility: hidden;}"),
-      tags$style(type = "text/css", ".shiny-output-error:before {content: ' Check your inputs or API key';}"),
+      tags$style(type = "text/css", ".shiny-output-error:before {content: ' Check your inputs or authentication';}"),
       tags$style(type = "text/css", "label {font-weight: bold;}"),
       fluidRow(
         column(12,tags$h3("Chat History"),tags$hr(),uiOutput("chat_history"),tags$hr())
       ),
       fluidRow(
-        column(11,textAreaInput(inputId = "user_message", placeholder = "Enter your message:", label="USER PROMPT", width = "100%")),
+        column(11,textAreaInput(inputId = "user_message", placeholder = "Enter your message:", label="Prompt", width = "100%")),
         column(1,actionButton("send_message", "Send",icon = icon("play"),height = "350px"))
       ),style = "background-color: #519BF7")
   ),style = "background-color: #3d3f4e")

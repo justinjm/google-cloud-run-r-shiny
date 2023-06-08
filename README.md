@@ -198,6 +198,8 @@ Delete AR repo:
 # gcloud artifacts repositories delete $DOCKER_REPO
 ```
 
+
+
 ## References
 
 * [Deploying Shiny to Cloud Run • googleCloudRunner](https://code.markedmondson.me/googleCloudRunner/articles/usecase-shiny-cloudrun.html)

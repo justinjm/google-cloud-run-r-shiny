@@ -108,9 +108,19 @@ pull docker image from artifact repository
 docker pull $IMAGE_URI
 ```
 
+start container from image on proper port
+
 ```sh
 docker run --rm -p 5000:5000 $IMAGE_URI
 ```
+
+list running containers to get container id for next step
+
+```sh
+docker ps
+```
+
+replace container id and enter docker container
 
 ```sh
 docker exec -it <container id>  bash
@@ -120,6 +130,12 @@ then view the logs:
 
 ```sh
 cd /var/log/shiny-server/
+```
+
+then cleanup
+
+```sh
+
 ```
 
 

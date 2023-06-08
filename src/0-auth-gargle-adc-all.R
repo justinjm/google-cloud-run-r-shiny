@@ -1,4 +1,3 @@
-
 # load packages -----------------------------------------------------------
 library(gargle)
 library(googleCloudStorageR)

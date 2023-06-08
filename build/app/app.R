@@ -5,18 +5,24 @@ library(bigrquery)
 library(googleCloudVertexAIR)
 
 # options(gargle_verbosity = "debug")
+# options(googleAuthR.verbose = 2)
 
 cat("project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
 cat("dataset_id:", dataset_id <- Sys.getenv("DATASET_ID"), "\n")
 cat("billing_project_id:", billing_project_id <- Sys.getenv("BILLING_PROJECT_ID"), "\n")
 cat("region:", region <- Sys.getenv("REGION"), "\n")
- 
-cat(file = stderr(), paste0("<br>Do I have a token: ", googleAuthR::gar_has_token()),  "\n")
 
 # authenticate ------------------------------------------------------------
-googleAuthR::gar_gce_auth()
+## cloud run
+# googleAuthR::gar_gce_auth()
 
-cat(file = stderr(), paste0("<br>Do I have a token: ", googleAuthR::gar_has_token()), "\n")
+## locally
+googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
+                      scopes = "https://www.googleapis.com/auth/cloud-platform")
+
+
+## check if token exists after auth for debugging purposes
+cat(file = stderr(), paste0("Does a gar token exist: ", googleAuthR::gar_has_token()), "\n")
 
 ## UI -----------------------------------------------------------------------
 ui <- fluidPage(

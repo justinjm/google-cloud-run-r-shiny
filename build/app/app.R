@@ -13,12 +13,25 @@ cat("billing_project_id:", billing_project_id <- Sys.getenv("BILLING_PROJECT_ID"
 cat("region:", region <- Sys.getenv("REGION"), "\n")
 
 # authenticate ------------------------------------------------------------
-## cloud run
-googleAuthR::gar_gce_auth()
+## function to choose auth based on where app running, can run on local machine
+## and in cloud run without code changes 
+custom_google_auth <- function() {
+  system <- Sys.info()
+  cat("sysname:", system[["sysname"]], "\n")
+  
+  if (system[["sysname"]] == "Linux") {
+    googleAuthR::gar_gce_auth()
+  } 
+  if (system[["sysname"]] == "Darwin") {
+    googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
+                          scopes = "https://www.googleapis.com/auth/cloud-platform")
+  }
+  else {
+    googleAuthR::gar_gce_auth()
+  }
+}
 
-## locally
-# googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
-#                       scopes = "https://www.googleapis.com/auth/cloud-platform")
+custom_google_auth()
 
 ## check if token exists after auth for debugging purposes
 cat(file = stderr(), paste0("Does a gar token exist: ", googleAuthR::gar_has_token()), "\n")

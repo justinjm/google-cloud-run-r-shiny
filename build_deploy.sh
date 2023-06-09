@@ -14,4 +14,4 @@ gcloud run deploy $SERVICE_NAME \
 
 gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
 
-## gcloud run services delete shiny --region=us-central1 ## 
+## gcloud run services delete $SERVICE_NAME --region=$REGION ## 

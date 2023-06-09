@@ -99,7 +99,6 @@ TODO
 <https://cloud.google.com/run/docs/securing/service-identity#gcloud>
 <https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-gcloud>
 
-
 ```sh
 # gcloud iam service-accounts create SA_NAME \
 #     --description="DESCRIPTION" \
@@ -146,50 +145,15 @@ gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REG
 
 #### Run Shiny App from Cloud Shell for debugging
 
-pull docker image from artifact repository
-
-```sh
-docker pull $IMAGE_URI
-```
-
-start container from image on proper port
-
-```sh
-docker run --rm -p 5000:5000 $IMAGE_URI
-```
-
-list running containers to get container id for next step
-
-```sh
-docker ps
-```
-
-replace container id and enter docker container
-
-```sh
-docker exec -it <container id>  bash
-```
-
-then view the logs:
-
-```sh
-cd /var/log/shiny-server/
-```
-
-then cleanup
-
-```sh
-docker stop <container id>
-docker rmi $IMAGE_URI
-```
+See [docs/debugging.md](docs/debugging.md) for instructions
 
 ### Cleanup
 
 Delete (or only stop) cloud run service
 
 ```sh
-gcloud run services delete $SERVICE_NAME --region=$REGION
 # gcloud run services stop $SERVICE_NAME --region=$REGION # stop service only
+gcloud run services delete $SERVICE_NAME --region=$REGION
 ```
 
 Delete AR repo:
@@ -198,6 +162,9 @@ Delete AR repo:
 # gcloud artifacts repositories delete $DOCKER_REPO
 ```
 
+## Original Source
+
+Source code forked from [tolgakurtuluss/shinychatgpt](https://github.com/tolgakurtuluss/shinychatgpt), thank you to [tolgakurtuluss](https://github.com/tolgakurtuluss) for open sourcing and sharing your project. 
 
 
 ## References
@@ -207,7 +174,7 @@ Delete AR repo:
 * [Online payments for data science apps (DSaaS) using R, Shiny, Firebase, Paddle and Google Cloud Functions · Mark Edmondson](https://code.markedmondson.me/datascience-aas/)
 * [Deploying an R Shiny Dashboard on GCP Cloud Run \| by Poorna Chathuranjana \| Medium](https://medium.com/@hdpoorna/deploying-an-r-shiny-dashboard-on-gcp-cloud-run-c1c32a076783#6a58)
 
-**Google Cloud Blog Post**
+### Official Google Cloud Blog Post
 
 * [Calculating physical climate risk for sustainable finance \| Google Cloud Blog](https://cloud.google.com/blog/topics/sustainability/calculating-physical-climate-risk-for-sustainable-finance)
   * [rsmsoftware / portfolio-climate-risk-analytics-design-pattern --- Bitbucket](https://bitbucket.org/rsmsoftware/portfolio-climate-risk-analytics-design-pattern/src/master/)

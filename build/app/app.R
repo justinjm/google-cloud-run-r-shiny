@@ -14,11 +14,11 @@ cat("region:", region <- Sys.getenv("REGION"), "\n")
 
 # authenticate ------------------------------------------------------------
 ## cloud run
-# googleAuthR::gar_gce_auth()
+googleAuthR::gar_gce_auth()
 
 ## locally
-googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
-                      scopes = "https://www.googleapis.com/auth/cloud-platform")
+# googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
+#                       scopes = "https://www.googleapis.com/auth/cloud-platform")
 
 ## check if token exists after auth for debugging purposes
 cat(file = stderr(), paste0("Does a gar token exist: ", googleAuthR::gar_has_token()), "\n")

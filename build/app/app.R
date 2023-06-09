@@ -26,17 +26,18 @@ cat(file = stderr(), paste0("Does a gar token exist: ", googleAuthR::gar_has_tok
 ## UI -----------------------------------------------------------------------
 ui <- fluidPage(
   div(
-    titlePanel("Shiny App Demo"),
+    titlePanel("Vertex AI GenAI App Demo"),
     style = "color: white; background-color: #4285f4"
   ),
   sidebarLayout(
     sidebarPanel(
       h3("Welcome to a Demo Shiny App!"),
       p("This application allows you interact with Vertex AI Generative APIs for text. Fill out the inputs below and then ask a question to the right."),
-      textInput("user_name", "User Name", "<FIRST NAME, LAST NAME>"),
       tags$p("Learn more about Generative AI on Vertex AI ", 
              tags$a(href = "https://cloud.google.com/vertex-ai/docs/generative-ai/learn/overview", target="_blank", "here")
-      ),tags$hr(),
+      ),
+      textInput("user_name", "User Name", "<FIRST NAME, LAST NAME>"),
+      tags$hr(),
       selectInput("model_name", "Model Name",
                   choices = c("text-bison"), selected = "text-bison"),
       tags$hr(),
@@ -64,7 +65,7 @@ ui <- fluidPage(
       ),
       fluidRow(
         column(11,textAreaInput(inputId = "user_message", placeholder = "Enter your message:", label="Prompt", width = "100%")),
-        column(1,actionButton("send_message", "Send",icon = icon("play"),height = "350px"))
+        column(1,actionButton("send_message", "Submit", icon = icon("play"),height = "350px"))
       ),style = "background-color: #519BF7")
   ),style = "background-color: #3d3f4e")
 

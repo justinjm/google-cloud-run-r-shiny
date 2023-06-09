@@ -33,6 +33,7 @@ Create an `.Renviron` file in the root of this project directory
 PROJECT_ID="<your-project-id>"
 REGION="us-central1"
 DATASET_ID="z_test"
+TABLE_ID="test"
 BILLING_PROJECT_ID=PROJECT_ID
 ```
 

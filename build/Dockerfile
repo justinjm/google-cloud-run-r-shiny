@@ -17,23 +17,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/ \
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
-# Basic support for gcloud
-RUN apt-get update && apt-get install -y apt-transport-https ca-certificates gnupg curl python3-pip
-
-# Install gcloud
-RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | \
-    tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add -
-RUN apt-get update -y && apt-get install -y google-cloud-cli
-
 # install required R packages
 ## from CRAN
-RUN R -e "install.packages('shiny', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('googleAuthR', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('gargle', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('googleCloudStorageR', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('bigrquery', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('DT', repos='http://cran.rstudio.com/')"
+RUN install2.r --error --skipinstalled --ncpus -1 \
+    shiny googleAuthR gargle \
+    googleCloudStorageR bigrquery DT \
+    && rm -rf /tmp/downloaded_packages
 
 ## from GitHub 
 RUN installGithub.r justinjm/googleCloudVertexAIR \

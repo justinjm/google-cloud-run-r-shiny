@@ -4,19 +4,8 @@ An example of how to deploy an R Shiny app on Google Cloud Run.
 
 ## Setup
 
-
-TODO 
-
-
-### Local machine 
-
-
-Install `gcloud` CLI 
-
-
-Set ADC on your local machine so you can test the app locally 
-
-<https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login>
+* Install `gcloud` CLI
+* Set ADC on your local machine so you can test the app locally <https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login>
 
 ```sh
 gcloud auth application-default login
@@ -24,16 +13,19 @@ gcloud auth application-default login
 
 ## Workflow
 
-### .Renviron 
+### .Renviron
 
 Create an `.Renviron` file in the root of this project directory
 
-```txt
+```sh
+cat << EOF > ./.Renviron
 # .Renviron
 PROJECT_ID="<your-project-id>"
 REGION="us-central1"
 DATASET_ID="z_test"
 BILLING_PROJECT_ID=PROJECT_ID
+
+EOF
 ```
 
 then copy it to the `build/app/` directory before proceeding (and deploying to cloud run)
@@ -42,13 +34,14 @@ then copy it to the `build/app/` directory before proceeding (and deploying to c
 cp ./.Renviron ./build/app/.Renviron
 ```
 
-### Set constants 
+### Set constants
 
 As global environment variables:
 
 ```sh
 PROJECT_ID=$(gcloud config get-value project)
 REGION="us-central1"
+SVC_ACCOUNT_NAME="shiny-run"
 DOCKER_REPO="shiny-run"
 IMAGE_NAME="shiny-run"
 IMAGE_TAG="latest"
@@ -64,7 +57,7 @@ gcloud services enable artifactregistry.googleapis.com
 
 ### create Artifact Registry (docker repository)
 
-Create an Artifact Registry (AR) repository (repo) to serve as our docker repository 
+Create an Artifact Registry (AR) repository (repo) to serve as our docker repository.
 
 ```sh
 gcloud artifacts repositories create $DOCKER_REPO \
@@ -81,7 +74,6 @@ gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION
 
 ### configure auth
 
-
 ```sh
 gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 ```
@@ -94,24 +86,28 @@ gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 
 ### Create Service account and attach to cloud run
 
-TODO 
+TODO
 
 <https://cloud.google.com/run/docs/securing/service-identity#gcloud>
 <https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-gcloud>
 
 ```sh
-# gcloud iam service-accounts create SA_NAME \
+# gcloud iam service-accounts create $SVC_ACCOUNT_NAME \
 #     --description="DESCRIPTION" \
 #     --display-name="DISPLAY_NAME"
-
-## give default compute engine service account access to bucket
+# 
+## give SA acccoutn access to 
+### Cloud Storage
+### BQ 
+### cloud run
+### vertex
 # gcloud projects describe ${PROJECT_ID} > project-info.txt
 # PROJECT_NUM=$(cat project-info.txt | sed -nre 's:.*projectNumber\: (.*):\1:p')
-# SVC_ACCOUNT="${PROJECT_NUM//\'/}-compute@developer.gserviceaccount.com"
-# gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:$SVC_ACCOUNT --role roles/storage.objectAdmin
+# SVC_ACCOUNT="${}-compute@developer.gserviceaccount.com"
+# gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:$SVC_ACCOUNT --role roles/XXXXXXXXXXXXXXXX
 ```
 
-save as global variable for use in next step 
+save as global variable for use in next step
 
 ```sh
 # export SVC_ACCOUNT=`XXXXXXXXXXX | jq -r '.cloudResource.serviceAccountId'`
@@ -121,6 +117,7 @@ save as global variable for use in next step
 ### Deploy to cloud run
 
 <https://cloud.google.com/sdk/gcloud/reference/run/deploy>
+<https://cloud.google.com/run/docs/configuring/session-affinity>
 
 ```sh
 gcloud run deploy $SERVICE_NAME \
@@ -129,8 +126,8 @@ gcloud run deploy $SERVICE_NAME \
   --platform="managed" \
   --max-instances=1 \
   --port="5000" \
-  --no-allow-unauthenticated
-  # \ -- service-account=$SVC_ACCOUNT 
+  --no-allow-unauthenticated # --session-affinity \
+  # -- service-account=$SVC_ACCOUNT 
 ```
 
 ### test with local proxy
@@ -158,14 +155,13 @@ gcloud run services delete $SERVICE_NAME --region=$REGION
 
 Delete AR repo:
 
-```sh 
+```sh
 # gcloud artifacts repositories delete $DOCKER_REPO
 ```
 
 ## Original Source
 
-Source code forked from [tolgakurtuluss/shinychatgpt](https://github.com/tolgakurtuluss/shinychatgpt), thank you to [tolgakurtuluss](https://github.com/tolgakurtuluss) for open sourcing and sharing your project. 
-
+Source code forked from [tolgakurtuluss/shinychatgpt](https://github.com/tolgakurtuluss/shinychatgpt), thank you to [tolgakurtuluss](https://github.com/tolgakurtuluss) for open sourcing and sharing your project.
 
 ## References
 

@@ -102,34 +102,50 @@ gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 ```
 
-### Create Service account and attach to cloud run
+### Create Service account and grant permissions 
 
-TODO
+To follow Google Cloud recommended best practices for service accounts.
 
-<https://cloud.google.com/run/docs/securing/service-identity#gcloud>
-<https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-gcloud>
+* <https://cloud.google.com/run/docs/deploying#permissions_required_to_deploy>
+* <https://cloud.google.com/run/docs/reference/iam/roles#additional-configuration>
+* <https://cloud.google.com/run/docs/securing/service-identity#gcloud>
+* <https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-gcloud>
 
 ```sh
-# gcloud iam service-accounts create $SVC_ACCOUNT_NAME \
-#     --description="DESCRIPTION" \
-#     --display-name="DISPLAY_NAME"
-# 
-## give SA acccoutn access to 
-### Cloud Storage
-### BQ 
-### cloud run
-### vertex
-# gcloud projects describe ${PROJECT_ID} > project-info.txt
-# PROJECT_NUM=$(cat project-info.txt | sed -nre 's:.*projectNumber\: (.*):\1:p')
-# SVC_ACCOUNT="${}-compute@developer.gserviceaccount.com"
-# gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:$SVC_ACCOUNT --role roles/XXXXXXXXXXXXXXXX
+gcloud iam service-accounts create $SVC_ACCOUNT_NAME \
+    --description="For deploying R Shiny apps on Cloud Run" \
+    --display-name="R Shiny Cloud Run service account"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/iam.serviceAccountUser"
+    
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/run.admin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/artifactregistry.admin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/storage.admin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/bigquery.admin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+     --role="roles/aiplatform.admin"
 ```
 
 save as global variable for use in next step
 
 ```sh
-# export SVC_ACCOUNT=`XXXXXXXXXXX | jq -r '.cloudResource.serviceAccountId'`
-# echo $SVC_ACCOUNT 
+export SVC_ACCOUNT_EMAIL=$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com
+echo $SVC_ACCOUNT_EMAIL
 ```
 
 ## Deploy to cloud run
@@ -138,37 +154,19 @@ save as global variable for use in next step
 
 Deploy app from container image we built in previous step
 
+<https://cloud.google.com/sdk/gcloud/reference/run/deploy>
+<https://cloud.google.com/run/docs/configuring/session-affinity>
+
 ```sh
 gcloud run deploy $SERVICE_NAME \
   --image $IMAGE_URI \
   --region=$REGION \
   --platform="managed" \
-  --max-instances=1 \
   --port="5000" \
-  --no-allow-unauthenticated 
+  --no-allow-unauthenticated \
+  --session-affinity \
+  --service-account=$SVC_ACCOUNT_EMAIL
 ```
-
-<https://cloud.google.com/sdk/gcloud/reference/run/deploy>
-<https://cloud.google.com/run/docs/configuring/session-affinity>
-
-TODO - try with
-
-* no max instances
-* session affinity enabled
-* dedicated service account
-
-
-```sh
-# gcloud run deploy $SERVICE_NAME \
-#   --image $IMAGE_URI \
-#   --region=$REGION \
-#   --platform="managed" \
-#   --port="5000" \
-#   --no-allow-unauthenticated \
-#   --session-affinity \
-#   --service-account=$SVC_ACCOUNT
-```
-
 
 ### test with local proxy
 
@@ -193,11 +191,19 @@ Delete (or only stop) cloud run service
 gcloud run services delete $SERVICE_NAME --region=$REGION
 ```
 
-Delete AR repo:
+Delete AR repo
 
 ```sh
 # gcloud artifacts repositories delete $DOCKER_REPO
 ```
+
+Delete service account
+
+```sh
+gcloud iam service-accounts delete $SVC_ACCOUNT_EMAIL
+```
+
+<https://cloud.google.com/iam/docs/service-accounts-delete-undelete>
 
 ## Original Source
 

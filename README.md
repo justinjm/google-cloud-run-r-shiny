@@ -2,7 +2,19 @@
 
 An example of how to deploy an R Shiny app on Google Cloud Run.
 
-## Setup
+## Getting started
+
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fjustinjm%2Fgoogle-cloud-run-r-shiny&cloudshell_git_branch=main)
+
+Or you can clone this repso
+
+```sh
+git clone https://github.com/justinjm/google-cloud-run-r-shiny
+```
+
+### Setup Local evironment
+
+#### Authentication
 
 * Install `gcloud` CLI
 * Set ADC on your local machine so you can test the app locally <https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login>
@@ -11,32 +23,9 @@ An example of how to deploy an R Shiny app on Google Cloud Run.
 gcloud auth application-default login
 ```
 
-## Workflow
+#### Set constants
 
-### .Renviron
-
-Create an `.Renviron` file in the root of this project directory
-
-```sh
-cat << EOF > ./.Renviron
-# .Renviron
-PROJECT_ID="<your-project-id>"
-REGION="us-central1"
-DATASET_ID="z_test"
-BILLING_PROJECT_ID=PROJECT_ID
-
-EOF
-```
-
-then copy it to the `build/app/` directory before proceeding (and deploying to cloud run)
-
-```sh
-cp ./.Renviron ./build/app/.Renviron
-```
-
-### Set constants
-
-As global environment variables:
+As global environment variables here for re-use throughout the rest of the steps
 
 ```sh
 PROJECT_ID=$(gcloud config get-value project)
@@ -49,11 +38,40 @@ IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/$IMAGE_NAME:$IMAGE_TA
 SERVICE_NAME="shiny"
 ```
 
+#### .Renviron
+
+Create an `.Renviron` file in the root of this project directory and then copy it to the `build/app/` directory by running the following:
+
+```sh
+cat << EOF > ./.Renviron
+# .Renviron
+PROJECT_ID=$PROJECT_ID
+REGION=$REGION
+DATASET_ID="z_test"
+BILLING_PROJECT_ID=$PROJECT_ID
+EOF
+
+cp ./.Renviron ./build/app/.Renviron
+```
+
+While it's non-ideal we need the `.Renviron` file in 2 places:
+
+1. the project root directory for development of the shiny app in RStudio, this is where the app looks
+2. the `build/app` directory for deployment of the shiny app to Google Cloud Run
+
+This can be avoided with a Terraform workflow and I plan to add it here, see [issue](https://github.com/justinjm/google-cloud-run-r-shiny/issues/1)) for status.
+
+Please note that for now, you must ensure these 2 files are in sync to avoid any deployment issues.
+
+## Setup Google Cloud
+
 ### enable apis
 
 ```sh
 gcloud services enable artifactregistry.googleapis.com
 ```
+
+## Build container image
 
 ### create Artifact Registry (docker repository)
 
@@ -114,10 +132,11 @@ save as global variable for use in next step
 # echo $SVC_ACCOUNT 
 ```
 
-### Deploy to cloud run
+## Deploy to cloud run
 
-<https://cloud.google.com/sdk/gcloud/reference/run/deploy>
-<https://cloud.google.com/run/docs/configuring/session-affinity>
+### Deploy app from image
+
+Deploy app from container image we built in previous step
 
 ```sh
 gcloud run deploy $SERVICE_NAME \
@@ -126,9 +145,30 @@ gcloud run deploy $SERVICE_NAME \
   --platform="managed" \
   --max-instances=1 \
   --port="5000" \
-  --no-allow-unauthenticated # --session-affinity \
-  # -- service-account=$SVC_ACCOUNT 
+  --no-allow-unauthenticated 
 ```
+
+<https://cloud.google.com/sdk/gcloud/reference/run/deploy>
+<https://cloud.google.com/run/docs/configuring/session-affinity>
+
+TODO - try with
+
+* no max instances
+* session affinity enabled
+* dedicated service account
+
+
+```sh
+# gcloud run deploy $SERVICE_NAME \
+#   --image $IMAGE_URI \
+#   --region=$REGION \
+#   --platform="managed" \
+#   --port="5000" \
+#   --no-allow-unauthenticated \
+#   --session-affinity \
+#   --service-account=$SVC_ACCOUNT
+```
+
 
 ### test with local proxy
 

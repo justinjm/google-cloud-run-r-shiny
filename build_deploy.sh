@@ -8,9 +8,10 @@ gcloud run deploy $SERVICE_NAME \
   --image $IMAGE_URI \
   --region=$REGION \
   --platform="managed" \
-  --max-instances=1 \
   --port="5000" \
-  --no-allow-unauthenticated
+  --no-allow-unauthenticated \
+  --session-affinity \
+  --service-account=$SVC_ACCOUNT_EMAIL
 
 gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
 

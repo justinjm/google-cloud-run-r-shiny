@@ -89,19 +89,26 @@ gcloud services enable artifactregistry.googleapis.com
 
 ### create Artifact Registry (docker repository)
 
-Create an Artifact Registry (AR) repository (repo) to serve as our docker repository.
+Create an Artifact Registry (AR) repository (repo) to serve as our docker repository,
+
+Running the code below will check if the repo exists first and create only if it does not exist.
 
 ```sh
-gcloud artifacts repositories create $DOCKER_REPO \
-  --repository-format=docker \
-  --location=$REGION \
-  --description="Docker repository for Shiny on Cloud Run demo"
-```
-
-view newly created AR repo to sanity check
-
-```sh
-gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION
+## Create artifact registry only if it does not already exist
+# Check if the repository already exists
+if gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION &> /dev/null; then
+  echo "Repository $DOCKER_REPO already exists:"
+  gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION
+else
+  # Create the repository if it doesn't exist
+  echo "Respository does not exist. Creating...."
+  gcloud artifacts repositories create $DOCKER_REPO \
+    --repository-format=docker \
+    --location=$REGION \
+    --description="Docker repository for Shiny on Cloud Run demo"
+  echo "Repository created."
+  gcloud artifacts repositories describe $DOCKER_REPO --location=$REGION
+fi 
 ```
 
 ### configure auth

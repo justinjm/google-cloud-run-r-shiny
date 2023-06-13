@@ -4,17 +4,31 @@ An example of how to deploy an R Shiny app on Google Cloud Run.
 
 ## Getting started
 
+### Cloud Shell
+
+Work from Cloud Shell by clicking the button below:
+
 [![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fjustinjm%2Fgoogle-cloud-run-r-shiny&cloudshell_git_branch=main)
 
-Or you can clone this repso
+### Other environment
+
+Or you can clone this repository to your development environment of choice
 
 ```sh
 git clone https://github.com/justinjm/google-cloud-run-r-shiny
 ```
 
-### Setup Local evironment
+## Setup local evironment
 
-#### Authentication
+### Authentication (Cloud Shell)
+
+run the following in Cloud Shell Terminal to trigger authentication
+
+```sh
+gcloud config list
+```
+
+### Authentication (non-cloud shell)
 
 * Install `gcloud` CLI
 * Set ADC on your local machine so you can test the app locally <https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login>
@@ -23,7 +37,7 @@ git clone https://github.com/justinjm/google-cloud-run-r-shiny
 gcloud auth application-default login
 ```
 
-#### Set constants
+### Set constants
 
 As global environment variables here for re-use throughout the rest of the steps
 
@@ -38,7 +52,7 @@ IMAGE_URI="$REGION-docker.pkg.dev/$PROJECT_ID/$DOCKER_REPO/$IMAGE_NAME:$IMAGE_TA
 SERVICE_NAME="shiny"
 ```
 
-#### .Renviron
+### .Renviron
 
 Create an `.Renviron` file in the root of this project directory and then copy it to the `build/app/` directory by running the following:
 
@@ -102,7 +116,7 @@ gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 ```
 
-### Create Service account and grant permissions 
+### Create Service account and grant permissions
 
 To follow Google Cloud recommended best practices for service accounts.
 
@@ -150,8 +164,6 @@ echo $SVC_ACCOUNT_EMAIL
 
 ## Deploy to cloud run
 
-### Deploy app from image
-
 Deploy app from container image we built in previous step
 
 <https://cloud.google.com/sdk/gcloud/reference/run/deploy>
@@ -178,11 +190,11 @@ gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REG
 
 <https://cloud.google.com/run/docs/authenticating/developers#testing>
 
-#### Run Shiny App from Cloud Shell for debugging
+### Run Shiny App from Cloud Shell for debugging
 
 See [docs/debugging.md](docs/debugging.md) for instructions
 
-### Cleanup
+## Cleanup
 
 Delete (or only stop) cloud run service
 

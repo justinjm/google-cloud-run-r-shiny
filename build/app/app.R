@@ -4,37 +4,38 @@ library(googleCloudStorageR)
 library(bigrquery)
 library(googleCloudVertexAIR)
 
+## set these options to help debugging
 # options(gargle_verbosity = "debug")
 # options(googleAuthR.verbose = 2)
 
-cat("project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
-cat("dataset_id:", dataset_id <- Sys.getenv("DATASET_ID"), "\n")
-cat("billing_project_id:", billing_project_id <- Sys.getenv("BILLING_PROJECT_ID"), "\n")
-cat("region:", region <- Sys.getenv("REGION"), "\n")
+## set and print constants for use below and in logging 
+cat(file = stderr(), "> project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
+cat(file = stderr(), "> dataset_id:", dataset_id <- Sys.getenv("DATASET_ID"), "\n")
+cat(file = stderr(), "> billing_project_id:", billing_project_id <- Sys.getenv("BILLING_PROJECT_ID"), "\n")
+cat(file = stderr(), "> region:", region <- Sys.getenv("REGION"), "\n")
 
 # authenticate ------------------------------------------------------------
-## function to choose auth based on where app running, can run on local machine
-## and in cloud run without code changes 
+#' Custom function to choose auth based on where app running, can run on local
+#' machine and in cloud run without code changes 
 custom_google_auth <- function() {
-  system <- Sys.info()
-  cat("sysname:", system[["sysname"]], "\n")
+  sysname <- Sys.info()[["sysname"]]
+  cat(file = stderr(), paste0("> sysname: ", sysname), "\n")
   
-  if (system[["sysname"]] == "Linux") {
+  if (sysname == "Linux") {
     googleAuthR::gar_gce_auth()
   } 
-  if (system[["sysname"]] == "Darwin") {
+  if (sysname == "Darwin") {
     googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
                           scopes = "https://www.googleapis.com/auth/cloud-platform")
   }
   else {
-    googleAuthR::gar_gce_auth()
+    cat("Not running on Linux or macOS, aborting auth...")
   }
 }
-
 custom_google_auth()
 
 ## check if token exists after auth for debugging purposes
-cat(file = stderr(), paste0("Does a gar token exist: ", googleAuthR::gar_has_token()), "\n")
+cat(file = stderr(), paste0("> Does a gar token exist: ", googleAuthR::gar_has_token()), "\n")
 
 ## UI -----------------------------------------------------------------------
 ui <- fluidPage(
@@ -56,6 +57,8 @@ ui <- fluidPage(
       tags$hr(),
       sliderInput("temperature", "Temperature", min = 0.1, max = 1.0, value = 0.2, step = 0.1),
       sliderInput("max_length", "Maximum Length", min = 1, max = 1024, value = 256, step = 1),
+      sliderInput("top_k", "Top-K", min = 1, max = 40, value = 40, step = 1),
+      sliderInput("top_p", "Top-P", min = 0, max = 1, value = .8, step = 0.01),
       tags$hr(),
       # textAreaInput(inputId = "sysprompt", label = "PROMPT",height = "200px", placeholder = "You are a helpful assistant."),
       # tags$hr(),
@@ -99,8 +102,8 @@ server <- function(input, output, session) {
         modelId=input$model_name,
         temperature = input$temperature,
         maxOutputTokens=input$max_length,
-        topP=0.8,
-        topK=40
+        topP=input$top_p,
+        topK=input$top_k
       )
       
       if (!is.null(api_res)) {

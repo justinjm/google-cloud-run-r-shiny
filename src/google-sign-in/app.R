@@ -1,5 +1,8 @@
 library(shiny)
+
 library(googleAuthR)
+
+
 
 # TODO 
 ## GCP
@@ -9,9 +12,16 @@ library(googleAuthR)
 ## when shiny app opens, change app url to be `http://localhost:5000/`
 options(googleAuthR.webapp.client_id = Sys.getenv("GAR_CLIENT_ID"))
 
+
 ## debugging and local testing only
 options(shiny.port = 5001)
-options(shiny.error = browser)
+# options(shiny.error = browser)
+## reactlog 
+library(reactlog)
+# options(shiny.reactlog=TRUE) 
+# tell shiny to log all reactivity
+reactlog_enable()
+# run shiny::reactlogShow() after app test done
 
 ui <- fluidPage(
   
@@ -37,6 +47,8 @@ server <- function(input, output, session) {
   output$g_name = renderText({ sign_ins()$name })
   output$g_email = renderText({ sign_ins()$email })
   output$g_image = renderUI({ img(src=sign_ins()$image) })
+  
+  
   
 }
 

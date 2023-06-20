@@ -1,15 +1,16 @@
 # https://lesliemyint.wordpress.com/2017/01/01/creating-a-shiny-app-with-google-login/
-options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
-                                        "https://www.googleapis.com/auth/userinfo.profile"))
-
-
-options("googleAuthR.webapp.client_id" = Sys.getenv("GAR_CLIENT_ID"))
-options("googleAuthR.webapp.client_secret" = Sys.getenv("GAR_CLIENT_SECRET"))
 
 library(shiny)
 library(googleAuthR)
 library(shinyjs)
 
+
+options(shiny.port = 5001)
+options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
+                                        "https://www.googleapis.com/auth/userinfo.profile"))
+
+options("googleAuthR.webapp.client_id" = Sys.getenv("GAR_CLIENT_ID"))
+options("googleAuthR.webapp.client_secret" = Sys.getenv("GAR_CLIENT_SECRET"))
 
 ui <- navbarPage(
   title = "App Name",
@@ -38,10 +39,10 @@ server <- function(input, output, session) {
   )
   
   ## Authentication
-  accessToken <- callModule(googleSignIn, "gauth_login"
-                            ,login_class = "btn btn-primary",
-                            logout_class = "btn btn-primary"
-                            )
+  accessToken <- callModule(googleAuth, "gauth_login",
+                            login_class = "btn btn-primary",
+                            logout_class = "btn btn-primary")
+  
   userDetails <- reactive({
     validate(
       need(accessToken(), "not logged in")

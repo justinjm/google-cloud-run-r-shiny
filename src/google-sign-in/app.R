@@ -1,8 +1,5 @@
 library(shiny)
-
 library(googleAuthR)
-
-
 
 # TODO 
 ## GCP
@@ -13,14 +10,16 @@ library(googleAuthR)
 options(googleAuthR.webapp.client_id = Sys.getenv("GAR_CLIENT_ID"))
 
 
-## debugging and local testing only
+## local testing only
 options(shiny.port = 5001)
+## debugging = browser 
 # options(shiny.error = browser)
-## reactlog 
-library(reactlog)
-# options(shiny.reactlog=TRUE) 
+## debugging - reactlog 
+# options(shiny.reactlog=TRUE)
+## debugging - reactlog 2
+# library(reactlog)
 # tell shiny to log all reactivity
-reactlog_enable()
+#reactlog_enable()
 # run shiny::reactlogShow() after app test done
 
 ui <- fluidPage(

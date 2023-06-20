@@ -7,9 +7,11 @@ library(googleAuthR)
 ## Local 
 ## add `GAR_CLIENT_ID="CLIENT-ID"` to `.Renviron` 
 ## when shiny app opens, change app url to be `http://localhost:5000/`
-
-options(shiny.port = 5000)
 options(googleAuthR.webapp.client_id = Sys.getenv("GAR_CLIENT_ID"))
+
+## debugging and local testing only
+options(shiny.port = 5001)
+options(shiny.error = browser)
 
 ui <- fluidPage(
   

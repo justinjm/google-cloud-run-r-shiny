@@ -3,17 +3,19 @@ library(gargle)
 library(bigrquery)
 library(DT)
 
-# Define your BigQuery project and dataset
-cat("project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
-cat("dataset_id:", dataset_id <- Sys.getenv("DATASET_ID"), "\n")
+## set and print constants for use below and in logging 
+cat(file = stderr(), "> project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
+cat(file = stderr(), "> region:", region <- Sys.getenv("REGION"), "\n")
 credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
+# sample query (only a few rows)
+## SELECT * FROM z_test.crm_user
 
 # UI
 ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
-      textInput("queryInput", "SQL Query"),
-      actionButton("submitBtn", "Submit")
+      textInput("queryInput", "Query:"),
+      actionButton("submit_query", "Run Query")
     ),
     mainPanel(
       fluidRow(
@@ -59,7 +61,7 @@ server <- function(input, output) {
   })
   
   # Handle submit button click event
-  observeEvent(input$submitBtn, {
+  observeEvent(input$submit_query, {
     output$tableOutput <- renderDataTable({
       datatable(result(), options = list(scrollX = TRUE))
     })

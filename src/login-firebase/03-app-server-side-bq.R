@@ -14,16 +14,15 @@ credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
 # firebase modals ---------------------------------------------------
 sign_in <- modalDialog(
   title = "Sign in",
-  textInput("email_signin", "Your email"),
-  passwordInput("password_signin", "Your password"),
+  textInput("email_signin", "Email"),
+  passwordInput("password_signin", "Password"),
   actionButton("signin", "Sign in")
 )
 
 # UI ----------------------------------------------------------------
 ui <- fluidPage(
-  # import firebase dependencies 
-  useFirebase(), 
-  actionButton("signin_modal", "Signin"),
+  useFirebase(),
+  actionButton("signin_modal", "Sign in"),
   reqSignin(
     sidebarLayout(
       sidebarPanel(
@@ -46,12 +45,12 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   f <- FirebaseEmailPassword$new()
-  
+
   # open modal
   observeEvent(input$signin_modal, {
     showModal(sign_in)
   })
-  
+
   observeEvent(input$signin, {
     removeModal()
     f$sign_in(input$email_signin, input$password_signin)
@@ -76,7 +75,7 @@ server <- function(input, output) {
     }
   })
   
-  # Render the result in a table
+  # Render the result in a data table
   output$tableOutput <- renderDataTable({
     f$req_sign_in()
     datatable(result(), options = list(scrollX = TRUE))
@@ -91,6 +90,7 @@ server <- function(input, output) {
   # Handle submit button click event
   observeEvent(input$submit_query, {
     output$tableOutput <- renderDataTable({
+      f$req_sign_in()
       datatable(result(), options = list(scrollX = TRUE))
     })
   })

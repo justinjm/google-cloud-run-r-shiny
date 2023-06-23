@@ -1,4 +1,5 @@
 library(shiny)
+library(firebase)
 library(gargle)
 library(bigrquery)
 library(DT)
@@ -12,6 +13,9 @@ credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
 
 # UI
 ui <- fluidPage(
+  # import firebase dependencies 
+  useFirebase(), 
+  firebaseUIContainer(),
   sidebarLayout(
     sidebarPanel(
       textInput("queryInput", "Query:"),
@@ -30,6 +34,14 @@ ui <- fluidPage(
 
 # Server
 server <- function(input, output) {
+  
+  f <- FirebaseUI$
+    new()$ # instantiate
+    set_providers( # define providers
+      email = TRUE, 
+      google = TRUE
+    )$
+    launch() # launch
   
   # Function to query BigQuery and retrieve results
   queryBigQuery <- function(query) {
@@ -52,11 +64,13 @@ server <- function(input, output) {
   
   # Render the result in a table
   output$tableOutput <- renderDataTable({
+    f$req_sign_in()
     datatable(result(), options = list(scrollX = TRUE))
   })
   
   # Render error messages
   output$errorOutput <- renderPrint({
+    f$req_sign_in()
     result()
   })
   

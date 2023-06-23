@@ -1,0 +1,58 @@
+# App - Login with Firebase
+
+## Install firebase R package 
+
+install package from GitHub, removed from CRAN on Oct 2022, see:
+
+* [Won't install on R 4.3](https://github.com/JohnCoene/firebase/issues/59)
+* [Package ‘firebase’ was removed from the CRAN repository](https://github.com/JohnCoene/firebase/issues/44)
+
+TLDR; Package is stable and usable, time consuming to maintian all required checks by CRAN and developer no longer has time.
+
+```r
+remotes::install_github("JohnCoene/firebase")
+```
+
+## Setup Firebase project
+
+### Configure Firebase Project
+
+1. Goto https://firebase.google.com/ and create a project
+2. Name your project and opt in or out of Google Analytics 
+3. Wait for provisioning to complete and land on Firebase console homepage
+4. Click "Web App" in the center
+5. Name your app (a project can have several apps) and click "continue to console"
+
+### Define methods
+
+6. click authentication on left sidebar and got sign-in method. we will setup 2 of the easy ones 1) email/password and 2) Google
+  * enable email - first option only
+  * enable Google - support email 
+  
+7. Set re-direct URL: goto authentication > Settings > Authorized Domains
+  * add `localhost` and `127.0.0.1` for local deployment
+  * will need to add deployed app url later 
+  
+  
+### Configuration 
+
+1.  Click the ![:gear:](https://twemoji.maxcdn.com/v/latest/svg/2699.svg) gear icon in the top left.
+2.  Click “project settings”
+3.  Scroll to the bottom of the “General” tab to find your app credentials.
+
+Set the following env vars in `.Renviron` file from the project settings 
+  
+```.Renviron
+FIREBASE_API_KEY=
+FIREBASE_PROJECT_ID=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_STORAGE_BUCKET=
+FIREBASE_APP_ID=
+FIREBASE_DATABASE_URL=
+```
+
+
+### Sample app 
+
+See `app-hello-world.R` and https://firebase.john-coene.com/auth/ui/
+

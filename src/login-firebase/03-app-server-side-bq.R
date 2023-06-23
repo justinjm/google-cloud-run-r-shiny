@@ -11,11 +11,19 @@ credentials_app_default(scopes="https://www.googleapis.com/auth/cloud-platform")
 # sample query (only a few rows)
 ## SELECT * FROM z_test.crm_user
 
-# UI
+# firebase modals ---------------------------------------------------
+sign_in <- modalDialog(
+  title = "Sign in",
+  textInput("email_signin", "Your email"),
+  passwordInput("password_signin", "Your password"),
+  actionButton("signin", "Sign in")
+)
+
+# UI ----------------------------------------------------------------
 ui <- fluidPage(
   # import firebase dependencies 
   useFirebase(), 
-  firebaseUIContainer(),
+  actionButton("signin_modal", "Signin"),
   reqSignin(
     sidebarLayout(
       sidebarPanel(
@@ -34,16 +42,20 @@ ui <- fluidPage(
   )
 )
 
-# Server
+# Server ---------------------------------------------------------------
 server <- function(input, output) {
   
-  f <- FirebaseUI$
-    new()$ # instantiate
-    set_providers( # define providers
-      email = TRUE, 
-      google = TRUE
-    )$
-    launch() # launch
+  f <- FirebaseEmailPassword$new()
+  
+  # open modal
+  observeEvent(input$signin_modal, {
+    showModal(sign_in)
+  })
+  
+  observeEvent(input$signin, {
+    removeModal()
+    f$sign_in(input$email_signin, input$password_signin)
+  })
   
   # Function to query BigQuery and retrieve results
   queryBigQuery <- function(query) {

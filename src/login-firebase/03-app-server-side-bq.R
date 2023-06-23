@@ -16,17 +16,19 @@ ui <- fluidPage(
   # import firebase dependencies 
   useFirebase(), 
   firebaseUIContainer(),
-  sidebarLayout(
-    sidebarPanel(
-      textInput("queryInput", "Query:"),
-      actionButton("submit_query", "Run Query")
-    ),
-    mainPanel(
-      fluidRow(
-        column(width = 12, dataTableOutput("tableOutput"))
+  reqSignin(
+    sidebarLayout(
+      sidebarPanel(
+        textInput("queryInput", "Query:"),
+        actionButton("submit_query", "Run Query")
       ),
-      fluidRow(
-        column(width = 12, verbatimTextOutput("errorOutput"))
+      mainPanel(
+        fluidRow(
+          column(width = 12, dataTableOutput("tableOutput"))
+        ),
+        fluidRow(
+          column(width = 12, verbatimTextOutput("errorOutput"))
+        )
       )
     )
   )

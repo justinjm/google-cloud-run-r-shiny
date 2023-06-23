@@ -80,15 +80,14 @@ server <- function(input, output) {
   
   # Render the result in a data table
   output$tableOutput <- renderDataTable({
+    f$req_sign_in()
     datatable(result(), options = list(scrollX = TRUE))
   })
   
   # Render error messages
   output$errorOutput <- renderPrint({
+    f$req_sign_in()
     result()
-    # if (startsWith(result(), "Error:")) {
-    #   result()
-    # }
   })
   
 }

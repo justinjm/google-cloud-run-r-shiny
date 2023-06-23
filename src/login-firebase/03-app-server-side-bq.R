@@ -56,6 +56,7 @@ server <- function(input, output) {
     f$sign_in(input$email_signin, input$password_signin)
   })
   
+  
   # Function to query BigQuery and retrieve results
   queryBigQuery <- function(query) {
     query_job <- bq_project_query(project_id, query = query)
@@ -64,7 +65,7 @@ server <- function(input, output) {
   }
   
   # Reactive expression to store the query result
-  result <- reactive({
+  result <- eventReactive(input$submit_query, {
     query <- input$queryInput
     if (!is.null(query) && query != "") {
       tryCatch({
@@ -72,28 +73,24 @@ server <- function(input, output) {
       }, error = function(e) {
         return(paste("Error:", e$message))
       })
+    } else {
+      return(data.frame())
     }
   })
   
   # Render the result in a data table
   output$tableOutput <- renderDataTable({
-    f$req_sign_in()
     datatable(result(), options = list(scrollX = TRUE))
   })
   
   # Render error messages
   output$errorOutput <- renderPrint({
-    f$req_sign_in()
     result()
+    # if (startsWith(result(), "Error:")) {
+    #   result()
+    # }
   })
   
-  # Handle submit button click event
-  observeEvent(input$submit_query, {
-    output$tableOutput <- renderDataTable({
-      f$req_sign_in()
-      datatable(result(), options = list(scrollX = TRUE))
-    })
-  })
 }
 
 # Run the Shiny app

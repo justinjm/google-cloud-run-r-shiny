@@ -94,3 +94,5 @@ server <- function(input, output) {
 
 # Run the Shiny app
 shinyApp(ui = ui, server = server)
+# local/testing
+# runApp(list(ui = ui, server = server), port = 5001)

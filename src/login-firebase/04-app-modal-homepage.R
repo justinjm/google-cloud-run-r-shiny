@@ -1,47 +1,56 @@
+library(shiny)
+library(shinyjs)
+library(waiter)
+library(firebase)
 
-
-
-ui <-  function(id) {
-  ns <- shiny::NS(id)
+homepageUI <- function(id) {
+  ns <- NS(id)
   fluidPage(
-    autoWaiter(),
-    useFirebase(),
     hidden(
-      div(id= ns('homepage_div'),
-          home_page$ui(ns("homepage"))
-      )
+      div(id= ns('homepage_div'))
     )
   )
 }
 
-server <- function(id) {
-  moduleServer(id, function(input, output, session) {
-    showModal(
-      div(
-        Sys.sleep(2),
-        useFirebase(),
-        firebase::firebaseUIContainer()
-      )
+homepageServer <- function(input, output, session) {
+  # Put your server-side code for the homepage here
+   output$plot <- renderPlot({
+  # f$req_sign_in() # require sign in
+  plot(cars)
+   })
+}
+
+ui <- fluidPage(
+  autoWaiter(),
+  useFirebase(),
+  homepageUI("homepage")
+)
+
+server <- function(input, output, session) {
+  showModal(
+    div(
+      # Sys.sleep(2),
+      useFirebase(),
+      firebaseUIContainer()
     )
-    
-    
-    f <- firebase::FirebaseUI$
-      new("session")$ # instantiate
-      set_providers( # define providers
-        email = TRUE,
-        google = TRUE
-      )$
-      launch() # launch
-    
-    observeEvent(f$get_signed_in(),{
-      if(isFALSE(f$get_signed_in()))
-        return()
-      removeModal()
-      show("homepage_div")
-      home_page$server("homepage")
-    })
-    
+  )
+  
+  f <- FirebaseUI$
+    new("session")$ # instantiate
+    set_providers( # define providers
+      email = TRUE,
+      google = TRUE
+    )$
+    launch() # launch
+  
+  observeEvent(f$get_signed_in(),{
+    if(isFALSE(f$get_signed_in()))
+      return()
+    removeModal()
+    show("homepage_div")
+    callModule(homepageServer, "homepage")
   })
+  
 }
 
 shiny::shinyApp(ui = ui, server = server)

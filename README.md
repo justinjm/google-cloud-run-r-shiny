@@ -203,10 +203,9 @@ See [docs/debugging.md](docs/debugging.md) for instructions
 
 ## Cleanup
 
-Delete (or only stop) cloud run service
+Delete cloud run service
 
 ```sh
-# gcloud run services stop $SERVICE_NAME --region=$REGION # stop service only
 gcloud run services delete $SERVICE_NAME --region=$REGION
 ```
 

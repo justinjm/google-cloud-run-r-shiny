@@ -7,7 +7,7 @@ homepageUI <- function(id) {
   ns <- NS(id)
   fluidPage(
     hidden(
-      div(id= ns('homepage_div'))
+      div(id = ns('homepage_div'))
     )
   )
 }

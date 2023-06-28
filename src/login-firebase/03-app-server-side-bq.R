@@ -45,17 +45,16 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   f <- FirebaseEmailPassword$new()
-
+  
   # open modal
   observeEvent(input$signin_modal, {
     showModal(sign_in)
   })
-
+  
   observeEvent(input$signin, {
     removeModal()
     f$sign_in(input$email_signin, input$password_signin)
   })
-  
   
   # Function to query BigQuery and retrieve results
   queryBigQuery <- function(query) {

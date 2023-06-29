@@ -45,12 +45,11 @@ ui <- fluidPage(
   ),
   sidebarLayout(
     sidebarPanel(
-      h3("Welcome to a Demo Shiny App!"),
+      h3("Welcome to a Vertex AI Demo Shiny App!"),
       p("This application allows you interact with Vertex AI Generative APIs for text. Fill out the inputs below and then ask a question to the right."),
       tags$p("Learn more about Generative AI on Vertex AI ", 
              tags$a(href = "https://cloud.google.com/vertex-ai/docs/generative-ai/learn/overview", target="_blank", "here")
       ),
-      textInput("user_name", "User Name", "<FIRST NAME, LAST NAME>"),
       tags$hr(),
       selectInput("model_name", "Model Name",
                   choices = c("text-bison"), selected = "text-bison"),

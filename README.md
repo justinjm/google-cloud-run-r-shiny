@@ -125,12 +125,15 @@ gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 
 ### Create Service account and grant permissions
 
+TODO - update to be best practice of minimum required permissions (see roles below in comments)
+
 To follow Google Cloud recommended best practices for service accounts.
 
 * <https://cloud.google.com/run/docs/deploying#permissions_required_to_deploy>
 * <https://cloud.google.com/run/docs/reference/iam/roles#additional-configuration>
 * <https://cloud.google.com/run/docs/securing/service-identity#gcloud>
 * <https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-gcloud>
+* <https://cloud.google.com/iam/docs/understanding-roles>
 
 ```sh
 gcloud iam service-accounts create $SVC_ACCOUNT_NAME \
@@ -144,22 +147,31 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
      --role="roles/run.admin"
+     # roles/run.viewer
+     # roles/run.invoker
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
      --role="roles/artifactregistry.admin"
+     # roles/artifactregistry.reader
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
      --role="roles/storage.admin"
+     # roles/storage.objectViewer
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
      --role="roles/bigquery.admin"
+     # bigquery.dataViewer
+     # roles/bigquery.jobUser
+     # roles/bigquery.user
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
      --role="roles/aiplatform.admin"
+     # roles/aiplatform.user
+     
 ```
 
 save as global variable for use in next step

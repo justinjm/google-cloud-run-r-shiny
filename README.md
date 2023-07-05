@@ -82,7 +82,11 @@ Please note that for now, you must ensure these 2 files are in sync to avoid any
 ### enable apis
 
 ```sh
-gcloud services enable artifactregistry.googleapis.com
+gcloud services enable \
+  bigquery.googleapis.com \
+  cloudbuild.googleapis.com \
+  artifactregistry.googleapis.com \
+  run.googleapis.com
 ```
 
 ## Build container image
@@ -142,36 +146,7 @@ gcloud iam service-accounts create $SVC_ACCOUNT_NAME \
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-    --role="roles/iam.serviceAccountUser"
-    
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/run.admin"
-     # roles/run.viewer
-     # roles/run.invoker
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/artifactregistry.admin"
-     # roles/artifactregistry.reader
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/storage.admin"
-     # roles/storage.objectViewer
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/bigquery.admin"
-     # bigquery.dataViewer
-     # roles/bigquery.jobUser
-     # roles/bigquery.user
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-     --role="roles/aiplatform.admin"
-     # roles/aiplatform.user
-     
+     --role="roles/aiplatform.user"
 ```
 
 save as global variable for use in next step
@@ -194,9 +169,11 @@ gcloud run deploy $SERVICE_NAME \
   --region=$REGION \
   --platform="managed" \
   --port="5000" \
-  --no-allow-unauthenticated \
+  --allow-unauthenticated \
   --session-affinity \
-  --service-account=$SVC_ACCOUNT_EMAIL
+  --service-account=$SVC_ACCOUNT_EMAIL \
+  --min-instances=1 \
+  --max-instances=10
 ```
 
 ### test with local proxy
@@ -213,25 +190,45 @@ gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REG
 
 See [docs/debugging.md](docs/debugging.md) for instructions
 
+## Private testing
+
+### Allow only authenticated users to access (Cloud IAM)
+
+First, deploy allowing only authenticated users:
+
+```sh
+gcloud run deploy $SERVICE_NAME \
+  --image $IMAGE_URI \
+  --region=$REGION \
+  --platform="managed" \
+  --port="5000" \
+  --no-allow-unauthenticated \
+  --session-affinity \
+  --service-account=$SVC_ACCOUNT_EMAIL \
+  --min-instances=1 \
+  --max-instances=10
+```
+
+### test with local proxy (if `--no-allow-unauthenticated`)
+
+Then access via a proxy
+
+```sh
+gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
+```
+
+<https://cloud.google.com/run/docs/authenticating/developers#testing>
+
 ## Cleanup
 
-Delete cloud run service
+Delete all created services
 
 ```sh
-gcloud run services delete $SERVICE_NAME --region=$REGION
+## gcloud run services delete $SERVICE_NAME --region=$REGION
+## gcloud artifacts repositories delete $DOCKER_REPO ## 
+## gcloud iam service-accounts delete $SVC_ACCOUNT_EMAIL ## 
 ```
 
-Delete AR repo
-
-```sh
-# gcloud artifacts repositories delete $DOCKER_REPO
-```
-
-Delete service account
-
-```sh
-gcloud iam service-accounts delete $SVC_ACCOUNT_EMAIL
-```
 
 <https://cloud.google.com/iam/docs/service-accounts-delete-undelete>
 

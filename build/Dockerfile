@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
 ## from CRAN
 RUN install2.r --error --skipinstalled --ncpus -1 \
     shiny googleAuthR gargle \
-    googleCloudStorageR bigrquery DT \
     && rm -rf /tmp/downloaded_packages
 
 ## from GitHub 

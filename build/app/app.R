@@ -1,7 +1,6 @@
 # app.R -----------------------------------------------------------------------
 library(shiny)
-library(googleCloudStorageR)
-library(bigrquery)
+library(googleAuthR)
 library(googleCloudVertexAIR)
 
 ## set these options to help debugging
@@ -10,8 +9,6 @@ library(googleCloudVertexAIR)
 
 ## set and print constants for use below and in logging 
 cat(file = stderr(), "> project_id:", project_id <- Sys.getenv("PROJECT_ID"), "\n")
-cat(file = stderr(), "> dataset_id:", dataset_id <- Sys.getenv("DATASET_ID"), "\n")
-cat(file = stderr(), "> billing_project_id:", billing_project_id <- Sys.getenv("BILLING_PROJECT_ID"), "\n")
 cat(file = stderr(), "> region:", region <- Sys.getenv("REGION"), "\n")
 
 # authenticate ------------------------------------------------------------
@@ -20,10 +17,9 @@ cat(file = stderr(), "> region:", region <- Sys.getenv("REGION"), "\n")
 custom_google_auth <- function() {
   sysname <- Sys.info()[["sysname"]]
   cat(file = stderr(), paste0("> sysname: ", sysname), "\n")
-  
   if (sysname == "Linux") {
     googleAuthR::gar_gce_auth()
-  } 
+  }
   if (sysname == "Darwin") {
     googleAuthR::gar_auth(email = Sys.getenv("GAR_AUTH_EMAIL"),
                           scopes = "https://www.googleapis.com/auth/cloud-platform")
@@ -37,8 +33,19 @@ custom_google_auth()
 ## check if token exists after auth for debugging purposes
 cat(file = stderr(), paste0("> Does a gar token exist: ", googleAuthR::gar_has_token()), "\n")
 
+# TODO - update / fix / remove
+# js <- '
+# $(document).keyup(function(event) {
+#     if ($("#user_message").is(":focus") && (event.keyCode == 13)) {
+#         $("#send_message").click();
+#     }
+# });
+# '
+
 ## UI -----------------------------------------------------------------------
 ui <- fluidPage(
+  # TODO - update / fix / remove
+  # tags$script(HTML(js)),
   div(
     titlePanel("Vertex AI GenAI App Demo"),
     style = "color: white; background-color: #4285f4"
@@ -59,8 +66,6 @@ ui <- fluidPage(
       sliderInput("top_k", "Top-K", min = 1, max = 40, value = 40, step = 1),
       sliderInput("top_p", "Top-P", min = 0, max = 1, value = .8, step = 0.01),
       tags$hr(),
-      # textAreaInput(inputId = "sysprompt", label = "PROMPT",height = "200px", placeholder = "You are a helpful assistant."),
-      # tags$hr(),
       tags$div(
         style="text-align:center; margin-top: 15px; color: white; background-color: #FFFFFF",
         a(href="https://github.com/justinjm/google-cloud-run-r-shiny", target="_blank",

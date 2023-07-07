@@ -61,8 +61,6 @@ cat << EOF > ./.Renviron
 # .Renviron
 PROJECT_ID=$PROJECT_ID
 REGION=$REGION
-DATASET_ID="z_test"
-BILLING_PROJECT_ID=$PROJECT_ID
 EOF
 
 cp ./.Renviron ./build/app/.Renviron

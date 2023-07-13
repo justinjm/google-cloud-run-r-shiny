@@ -127,8 +127,6 @@ gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 
 ### Create Service account and grant permissions
 
-TODO - update to be best practice of minimum required permissions (see roles below in comments)
-
 To follow Google Cloud recommended best practices for service accounts.
 
 * <https://cloud.google.com/run/docs/deploying#permissions_required_to_deploy>
@@ -154,9 +152,9 @@ export SVC_ACCOUNT_EMAIL=$SVC_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com
 echo $SVC_ACCOUNT_EMAIL
 ```
 
-## Deploy to cloud run
+## Deploy to cloud run (public)
 
-Deploy app from container image we built in previous step
+Deploy app from container image we built in previous step to be publicly accessible
 
 <https://cloud.google.com/sdk/gcloud/reference/run/deploy>
 <https://cloud.google.com/run/docs/configuring/session-affinity>
@@ -173,16 +171,6 @@ gcloud run deploy $SERVICE_NAME \
   --min-instances=1 \
   --max-instances=10
 ```
-
-### test with local proxy
-
-Since we are disallowing all unauthenticated users, need to access via a proxy
-
-```sh
-gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
-```
-
-<https://cloud.google.com/run/docs/authenticating/developers#testing>
 
 ### Run Shiny App from Cloud Shell for debugging
 
@@ -226,8 +214,6 @@ Delete all created services
 ## gcloud artifacts repositories delete $DOCKER_REPO ## 
 ## gcloud iam service-accounts delete $SVC_ACCOUNT_EMAIL ## 
 ```
-
-
 <https://cloud.google.com/iam/docs/service-accounts-delete-undelete>
 
 ## Original Source

@@ -20,6 +20,6 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 # R Environment Variables
-.Renviron
+.Renviron*
 # key files
 client.json

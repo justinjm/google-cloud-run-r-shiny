@@ -2,6 +2,8 @@
 
 An example of how to deploy an R Shiny app on Google Cloud Run.
 
+![](img/app-screenshot.png)
+
 ## Getting started
 
 ### Cloud Shell

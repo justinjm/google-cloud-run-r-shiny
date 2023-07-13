@@ -2,6 +2,8 @@
 
 source args
 
+cp ./.Renviron ./build/app/.Renviron
+
 gcloud builds submit --region=$REGION --tag=$IMAGE_URI --timeout=1h ./build
 
 gcloud run deploy $SERVICE_NAME \
@@ -14,5 +16,3 @@ gcloud run deploy $SERVICE_NAME \
   --service-account=$SVC_ACCOUNT_EMAIL
 
 gcloud beta run services proxy $SERVICE_NAME --project=$PROJECT_ID --region=$REGION
-
-## gcloud run services delete $SERVICE_NAME --region=$REGION ## 

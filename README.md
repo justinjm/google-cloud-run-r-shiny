@@ -160,6 +160,8 @@ Deploy app from container image we built in previous step to be publicly accessi
 <https://cloud.google.com/run/docs/configuring/session-affinity>
 
 ```sh
+source args 
+
 gcloud run deploy $SERVICE_NAME \
   --image $IMAGE_URI \
   --region=$REGION \
@@ -183,6 +185,8 @@ See [docs/debugging.md](docs/debugging.md) for instructions
 First, deploy allowing only authenticated users:
 
 ```sh
+source args 
+
 gcloud run deploy $SERVICE_NAME \
   --image $IMAGE_URI \
   --region=$REGION \
